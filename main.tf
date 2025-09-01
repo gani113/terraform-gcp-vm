@@ -27,8 +27,7 @@ resource "google_compute_instance" "jenkins_vm" {
     }
 
     network_interface {
-      network = google_compute_network.project_vpc.self_link
-      subnetwork = google_compute_subnetwork.project-vpc-subnet.self_link
+      network = data.google_compute_network.project_vpc.id
 
       access_config {}
     }
