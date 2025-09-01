@@ -1,0 +1,46 @@
+name: Terraform GCP Deployment
+
+on:
+  push:
+    branches:
+      - main   # Runs only when you push to main branch
+
+jobs:
+  terraform:
+    name: Deploy Terraform to GCP
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5   # use your installed version
+
+      # 3. Authenticate with GCP using Service Account Key
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # 4. Setup gcloud CLI (optional but useful for debugging)
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # 5. Terraform Init
+      - name: Terraform Init
+        run: terraform init
+      
+      # 6. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      # 7. Terraform Apply (auto-approve for CI/CD)
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
