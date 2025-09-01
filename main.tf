@@ -10,13 +10,18 @@ data "google_compute_network" "project_vpc" {
   
 }
 
+data "google-comput_subnetwork" "project_vpc_subnet" {
+  name = "project-vpc-subnet"
+  project = var.project
+}
+
 # resource "google_service_account" "gcp_cicd_sa" {
 #     account_id = "gcp-cicd-sa"
 #     display_name = "gcp-cicd-sa"  
 # }
 
-resource "google_compute_instance" "jenkins_vm" {
-    name = "jenkins-vm"
+resource "google_compute_instance" "jenkins_test_vm" {
+    name = "jenkins-testvm"
     machine_type = "e2-medium"
     
     boot_disk {
@@ -27,8 +32,7 @@ resource "google_compute_instance" "jenkins_vm" {
     }
 
     network_interface {
-      network = data.google_compute_network.project_vpc.id
-
+      network = data.google_compute_subnetwork.project_vpc_subnet.self_link
       access_config {}
     }
 }
